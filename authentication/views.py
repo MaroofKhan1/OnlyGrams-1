@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
 from authentication.forms import UserForm
+from django.contrib.auth import authenticate, login
 # Create your views here.
 
 def home(request):
@@ -17,7 +18,13 @@ class SignInView(View):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, email=email, password=password)
+        if user is None:
+            return render(request, self.template_name)
+        login(request, user)
+        return redirect('home_feed')
         # this is where we are going to define user login above our sign up
 
 
